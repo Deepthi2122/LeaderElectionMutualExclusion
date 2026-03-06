@@ -1,0 +1,51 @@
+package main
+
+import "sync"
+
+type Node struct {
+	ID   int
+	Port int
+
+	Peers map[int]string
+
+	LeaderID int
+	Alive    bool
+
+	mu sync.RWMutex
+
+	// Ricart–Agrawala
+	LogicalClock     int
+	State            string
+	RequestTimestamp int
+	ReplyCount       int
+	DeferredRequests []int
+	csReadyCh        chan struct{}
+
+	// Files
+	Files map[string]int
+}
+
+func NewNode(id int, port int, peers map[int]string) *Node {
+
+	if len(peers) == 0 {
+		peers = map[int]string{
+			1: "10.97.141.218:8001",
+			2: "10.97.141.82:8002",
+			3: "10.97.141.35:8003",
+			4: "10.97.141.158:8004",
+		}
+	}
+
+	return &Node{
+		ID:   id,
+		Port: port,
+
+		Peers: peers,
+
+		Alive: true,
+
+		State: "RELEASED",
+
+		Files: make(map[string]int),
+	}
+}
