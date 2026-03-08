@@ -1,6 +1,6 @@
 # Leader Election and Mutual Exclusion (Distributed File Replication)
 
-A Go-based distributed system demonstrating the **Bully Algorithm** for leader election, **Ricart-Agrawala Algorithm** for mutual exclusion, and **Consensus-based File Replication**.
+A Go-based distributed system demonstrating the **Chang–Roberts Algorithm** for leader election, **Ricart–Agrawala Algorithm** for mutual exclusion, and **Consensus-based File Replication**.
 
 ## 🚀 Quick Start (Local Demo)
 
