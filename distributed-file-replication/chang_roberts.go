@@ -26,6 +26,10 @@ func (h *RPCHandler) Election(candidateID int, reply *bool) error {
 
 func (n *Node) BecomeLeader() {
 	n.mu.Lock()
+	if n.LeaderID == n.ID {
+		n.mu.Unlock()
+		return
+	}
 	n.LeaderID = n.ID
 	n.mu.Unlock()
 
@@ -48,7 +52,10 @@ func (h *RPCHandler) Coordinator(leaderID int, ack *bool) error {
 	n.LeaderID = leaderID
 	n.mu.Unlock()
 
-	LogInfo("Node %d recognized Node %d as the new LEADER", n.ID, leaderID)
+	LogSuccess("Node %d recognized Node %d as the new LEADER", n.ID, leaderID)
+
+	// Forward to next neighbor
+	go n.CallNextNeighbor("RPCHandler.Coordinator", leaderID, ack)
 
 	return nil
 }
