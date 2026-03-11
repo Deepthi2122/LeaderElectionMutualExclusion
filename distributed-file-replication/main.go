@@ -39,22 +39,16 @@ func main() {
 
 	node := NewNode(*id, *port, peers)
 
-	LogInfo("Initializing Node %d on port %d...", node.ID, node.Port)
 	node.InitStorage()
 
-	LogSuccess("Node %d base services initialized", node.ID)
+	fmt.Println("Starting Node", node.ID)
 
-	go func() {
-		LogInfo("Starting RPC server for Node %d...", node.ID)
-		node.StartRPC()
-	}()
+	go node.StartRPC()
 
 	go node.StartHeartbeat()
 
-	LogElection("Node %d joining the ring and starting election...", node.ID)
 	go node.StartElection()
 
-	LogInfo("Node %d listening for console commands", node.ID)
 	go StartCommandListener(node)
 
 	select {}

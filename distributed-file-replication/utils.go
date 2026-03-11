@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"time"
 )
 
 // ANSI color codes for terminal
@@ -69,5 +70,22 @@ func PrintStatus(n *Node) {
 
 func (n *Node) StartHeartbeat() {
 	LogInfo("Heartbeat service started for Node %d", n.ID)
-	// We could add more periodic status logs here if desired
+	for {
+		time.Sleep(5 * time.Second)
+
+		n.mu.RLock()
+		leaderID := n.LeaderID
+		n.mu.RUnlock()
+
+		if leaderID == 0 || leaderID == n.ID {
+			continue
+		}
+
+		var reply bool
+		err := n.CallPeer(leaderID, "RPCHandler.Ping", n.ID, &reply)
+		if err != nil {
+			LogWarn("Heartbeat failed! Leader Node %d is unresponsive: %v. Starting new election!", leaderID, err)
+			n.StartElection()
+		}
+	}
 }
